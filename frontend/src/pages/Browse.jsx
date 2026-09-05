@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import api from '../api/axios';
 import ContentCard from '../components/ContentCard';
+import { SkeletonGrid } from '../components/Skeleton';
 
 export default function Browse() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -46,7 +47,7 @@ export default function Browse() {
         </select>
       </div>
       {loading ? (
-        <p>Loading...</p>
+        <SkeletonGrid />
       ) : items.length === 0 ? (
         <p>No titles found.</p>
       ) : (

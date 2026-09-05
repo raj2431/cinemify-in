@@ -1,9 +1,6 @@
 require('dotenv').config();
 const bcrypt = require('bcryptjs');
-const { sequelize, User, Genre, Content, Episode } = require('./models');
-
-const SAMPLE_VIDEO = 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4';
-const SAMPLE_VIDEO_2 = 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.webm';
+const { sequelize, User, Genre, Content, Profile } = require('./models');
 
 const run = async () => {
   await sequelize.authenticate();
@@ -17,151 +14,103 @@ const run = async () => {
   }
 
   const adminEmail = 'admin@cinemify.com';
-  const existingAdmin = await User.findOne({ where: { email: adminEmail } });
-  if (!existingAdmin) {
+  let admin = await User.findOne({ where: { email: adminEmail } });
+  if (!admin) {
     const hashed = await bcrypt.hash('admin123', 10);
-    await User.create({ name: 'Admin', email: adminEmail, password: hashed, role: 'admin' });
+    admin = await User.create({ name: 'Admin', email: adminEmail, password: hashed, role: 'admin' });
     console.log(`Created admin user: ${adminEmail} / admin123`);
   }
+  await Profile.findOrCreate({ where: { userId: admin.id }, defaults: { name: 'Admin', avatarColor: '#e50914' } });
 
+  // Real, freely-licensed short films (Blender Foundation open movies, CC BY 3.0/4.0),
+  // hosted on the Internet Archive. Posters are official promotional art from Wikimedia Commons.
   const movies = [
     {
-      title: 'Neon Skyline', description: 'A detective chases a data thief through a rain-soaked megacity.',
-      type: 'movie', posterUrl: 'https://picsum.photos/seed/neon/400/600', bannerUrl: 'https://picsum.photos/seed/neonbanner/1280/720',
-      videoUrl: SAMPLE_VIDEO, trailerUrl: SAMPLE_VIDEO_2, releaseYear: 2023, durationMinutes: 118, rating: 8.2, featured: true,
-      genreNames: ['Action', 'Thriller'],
-    },
-    {
-      title: 'Quiet Harbor', description: 'Two estranged sisters reunite after their father\'s passing.',
-      type: 'movie', posterUrl: 'https://picsum.photos/seed/harbor/400/600', bannerUrl: 'https://picsum.photos/seed/harborbanner/1280/720',
-      videoUrl: SAMPLE_VIDEO, trailerUrl: SAMPLE_VIDEO_2, releaseYear: 2022, durationMinutes: 104, rating: 7.6, featured: false,
-      genreNames: ['Drama'],
-    },
-    {
-      title: 'Laugh Track', description: 'A washed-up comedian gets one last shot at a comeback special.',
-      type: 'movie', posterUrl: 'https://picsum.photos/seed/laugh/400/600', bannerUrl: 'https://picsum.photos/seed/laughbanner/1280/720',
-      videoUrl: SAMPLE_VIDEO, trailerUrl: SAMPLE_VIDEO_2, releaseYear: 2021, durationMinutes: 96, rating: 6.9, featured: false,
+      title: 'Big Buck Bunny',
+      description: "A giant, easygoing rabbit is bullied by three mischievous rodents, until he decides enough is enough. The Blender Foundation's landmark 2008 open-source animated short.",
+      type: 'movie',
+      posterUrl: 'https://upload.wikimedia.org/wikipedia/commons/c/c5/Big_buck_bunny_poster_big.jpg',
+      bannerUrl: 'https://upload.wikimedia.org/wikipedia/commons/c/c5/Big_buck_bunny_poster_big.jpg',
+      videoUrl: 'https://archive.org/download/BigBuckBunny_124/Content/big_buck_bunny_720p_surround.mp4',
+      trailerUrl: null,
+      releaseYear: 2008, durationMinutes: 10, rating: 8.6, featured: true,
       genreNames: ['Comedy'],
     },
     {
-      title: 'Event Horizon Nine', description: 'A colony ship crew discovers they are not alone at the edge of the galaxy.',
-      type: 'movie', posterUrl: 'https://picsum.photos/seed/horizon/400/600', bannerUrl: 'https://picsum.photos/seed/horizonbanner/1280/720',
-      videoUrl: SAMPLE_VIDEO, trailerUrl: SAMPLE_VIDEO_2, releaseYear: 2024, durationMinutes: 132, rating: 8.7, featured: true,
-      genreNames: ['Sci-Fi', 'Thriller'],
-    },
-    {
-      title: 'Monsoon Wedding Blues', description: 'A chaotic family reunion unravels old rivalries just days before a wedding.',
-      type: 'movie', posterUrl: 'https://picsum.photos/seed/monsoon/400/600', bannerUrl: 'https://picsum.photos/seed/monsoonbanner/1280/720',
-      videoUrl: SAMPLE_VIDEO, trailerUrl: SAMPLE_VIDEO_2, releaseYear: 2022, durationMinutes: 141, rating: 7.4, featured: false,
-      genreNames: ['Comedy', 'Romance'],
-    },
-    {
-      title: 'Iron Circuit', description: 'An underground street racer is recruited into a heist crew targeting a crypto exchange.',
-      type: 'movie', posterUrl: 'https://picsum.photos/seed/iron/400/600', bannerUrl: 'https://picsum.photos/seed/ironbanner/1280/720',
-      videoUrl: SAMPLE_VIDEO, trailerUrl: SAMPLE_VIDEO_2, releaseYear: 2023, durationMinutes: 112, rating: 7.1, featured: false,
-      genreNames: ['Action'],
-    },
-    {
-      title: 'The Last Lighthouse', description: 'A lightkeeper on a remote island uncovers a decades-old conspiracy.',
-      type: 'movie', posterUrl: 'https://picsum.photos/seed/lighthouse/400/600', bannerUrl: 'https://picsum.photos/seed/lighthousebanner/1280/720',
-      videoUrl: SAMPLE_VIDEO, trailerUrl: SAMPLE_VIDEO_2, releaseYear: 2020, durationMinutes: 108, rating: 7.8, featured: false,
-      genreNames: ['Thriller', 'Drama'],
-    },
-    {
-      title: 'Second Innings', description: 'A retired cricket coach takes on a struggling village team for one last shot at glory.',
-      type: 'movie', posterUrl: 'https://picsum.photos/seed/innings/400/600', bannerUrl: 'https://picsum.photos/seed/inningsbanner/1280/720',
-      videoUrl: SAMPLE_VIDEO, trailerUrl: SAMPLE_VIDEO_2, releaseYear: 2021, durationMinutes: 126, rating: 8.0, featured: true,
-      genreNames: ['Drama'],
-    },
-    {
-      title: 'Ghost Frequency', description: 'A radio host starts receiving broadcasts from a station that burned down years ago.',
-      type: 'movie', posterUrl: 'https://picsum.photos/seed/ghostfreq/400/600', bannerUrl: 'https://picsum.photos/seed/ghostfreqbanner/1280/720',
-      videoUrl: SAMPLE_VIDEO, trailerUrl: SAMPLE_VIDEO_2, releaseYear: 2023, durationMinutes: 99, rating: 6.8, featured: false,
-      genreNames: ['Thriller'],
-    },
-    {
-      title: 'Paper Hearts', description: 'Two rival greeting-card writers fall for each other while ghostwriting the same wedding speech.',
-      type: 'movie', posterUrl: 'https://picsum.photos/seed/paperhearts/400/600', bannerUrl: 'https://picsum.photos/seed/paperheartsbanner/1280/720',
-      videoUrl: SAMPLE_VIDEO, trailerUrl: SAMPLE_VIDEO_2, releaseYear: 2022, durationMinutes: 101, rating: 7.0, featured: false,
-      genreNames: ['Romance', 'Comedy'],
-    },
-    {
-      title: 'Deep Current', description: 'A marine biologist and a salvage diver race a mining corporation to a reef full of secrets.',
-      type: 'movie', posterUrl: 'https://picsum.photos/seed/deepcurrent/400/600', bannerUrl: 'https://picsum.photos/seed/deepcurrentbanner/1280/720',
-      videoUrl: SAMPLE_VIDEO, trailerUrl: SAMPLE_VIDEO_2, releaseYear: 2024, durationMinutes: 116, rating: 7.5, featured: false,
-      genreNames: ['Action', 'Sci-Fi'],
-    },
-    {
-      title: 'The Spice Merchants', description: 'A documentary tracing three generations of a family-run spice trading house.',
-      type: 'movie', posterUrl: 'https://picsum.photos/seed/spice/400/600', bannerUrl: 'https://picsum.photos/seed/spicebanner/1280/720',
-      videoUrl: SAMPLE_VIDEO, trailerUrl: SAMPLE_VIDEO_2, releaseYear: 2021, durationMinutes: 88, rating: 8.3, featured: false,
-      genreNames: ['Documentary'],
-    },
-    {
-      title: 'Nightshift Diner', description: 'Strangers passing through an all-night diner discover their lives are more connected than they thought.',
-      type: 'movie', posterUrl: 'https://picsum.photos/seed/diner/400/600', bannerUrl: 'https://picsum.photos/seed/dinerbanner/1280/720',
-      videoUrl: SAMPLE_VIDEO, trailerUrl: SAMPLE_VIDEO_2, releaseYear: 2020, durationMinutes: 97, rating: 7.2, featured: false,
-      genreNames: ['Drama', 'Comedy'],
-    },
-    {
-      title: 'Crimson Peaks', description: 'A mountaineering expedition goes wrong when the team realizes they are being hunted.',
-      type: 'movie', posterUrl: 'https://picsum.photos/seed/crimson/400/600', bannerUrl: 'https://picsum.photos/seed/crimsonbanner/1280/720',
-      videoUrl: SAMPLE_VIDEO, trailerUrl: SAMPLE_VIDEO_2, releaseYear: 2023, durationMinutes: 121, rating: 7.6, featured: false,
-      genreNames: ['Thriller', 'Action'],
-    },
-    {
-      title: 'Bombay Static', description: 'A pirate radio DJ becomes the unlikely voice of a city-wide protest movement.',
-      type: 'movie', posterUrl: 'https://picsum.photos/seed/bombaystatic/400/600', bannerUrl: 'https://picsum.photos/seed/bombaystaticbanner/1280/720',
-      videoUrl: SAMPLE_VIDEO, trailerUrl: SAMPLE_VIDEO_2, releaseYear: 2022, durationMinutes: 132, rating: 8.5, featured: true,
-      genreNames: ['Drama'],
-    },
-    {
-      title: 'The Wedding Heist', description: 'A groom\'s estranged brother returns to pull off one last con at the reception.',
-      type: 'movie', posterUrl: 'https://picsum.photos/seed/weddingheist/400/600', bannerUrl: 'https://picsum.photos/seed/weddingheistbanner/1280/720',
-      videoUrl: SAMPLE_VIDEO, trailerUrl: SAMPLE_VIDEO_2, releaseYear: 2024, durationMinutes: 109, rating: 6.9, featured: false,
-      genreNames: ['Comedy', 'Action'],
-    },
-  ];
-
-  const series = [
-    {
-      title: 'Wire Crossed', description: 'Rival hackers are forced to team up to stop a rogue AI.',
-      type: 'series', posterUrl: 'https://picsum.photos/seed/wire/400/600', bannerUrl: 'https://picsum.photos/seed/wirebanner/1280/720',
-      trailerUrl: SAMPLE_VIDEO_2, releaseYear: 2023, rating: 8.0, featured: true,
+      title: "Elephants Dream",
+      description: 'Two characters, Proog and Emo, explore a strange machine world in this surreal 2006 short — the very first film ever made entirely with open-source software.',
+      type: 'movie',
+      posterUrl: 'https://upload.wikimedia.org/wikipedia/commons/0/0c/ElephantsDreamPoster.jpg',
+      bannerUrl: 'https://upload.wikimedia.org/wikipedia/commons/0/0c/ElephantsDreamPoster.jpg',
+      videoUrl: 'https://archive.org/download/ElephantsDream/ed_1024_512kb.mp4',
+      trailerUrl: null,
+      releaseYear: 2006, durationMinutes: 11, rating: 7.9, featured: false,
       genreNames: ['Sci-Fi', 'Drama'],
-      episodes: [
-        { season: 1, episodeNumber: 1, title: 'Pilot', videoUrl: SAMPLE_VIDEO, durationMinutes: 45 },
-        { season: 1, episodeNumber: 2, title: 'Backdoor', videoUrl: SAMPLE_VIDEO, durationMinutes: 42 },
-        { season: 1, episodeNumber: 3, title: 'Firewall', videoUrl: SAMPLE_VIDEO, durationMinutes: 47 },
-      ],
     },
     {
-      title: 'Dynasty Kitchens', description: 'Three rival restaurant families battle for a Michelin star and each other\'s secrets.',
-      type: 'series', posterUrl: 'https://picsum.photos/seed/dynasty/400/600', bannerUrl: 'https://picsum.photos/seed/dynastybanner/1280/720',
-      trailerUrl: SAMPLE_VIDEO_2, releaseYear: 2024, rating: 7.9, featured: false,
-      genreNames: ['Drama', 'Comedy'],
-      episodes: [
-        { season: 1, episodeNumber: 1, title: 'Mise en Place', videoUrl: SAMPLE_VIDEO, durationMinutes: 38 },
-        { season: 1, episodeNumber: 2, title: 'Service', videoUrl: SAMPLE_VIDEO, durationMinutes: 41 },
-        { season: 1, episodeNumber: 3, title: 'The Tasting', videoUrl: SAMPLE_VIDEO, durationMinutes: 39 },
-        { season: 1, episodeNumber: 4, title: 'Send It Back', videoUrl: SAMPLE_VIDEO, durationMinutes: 43 },
-      ],
+      title: 'Sintel',
+      description: 'A lonely girl named Sintel searches a vast, dragon-inhabited world for a baby dragon she raised and lost. A 2010 fantasy adventure from the Blender Foundation.',
+      type: 'movie',
+      posterUrl: 'https://upload.wikimedia.org/wikipedia/commons/8/8f/Sintel_poster.jpg',
+      bannerUrl: 'https://upload.wikimedia.org/wikipedia/commons/8/8f/Sintel_poster.jpg',
+      videoUrl: 'https://archive.org/download/Sintel/sintel-2048-surround_512kb.mp4',
+      trailerUrl: null,
+      releaseYear: 2010, durationMinutes: 15, rating: 8.8, featured: true,
+      genreNames: ['Action', 'Drama'],
+    },
+    {
+      title: 'Tears of Steel',
+      description: 'In a ravaged future Amsterdam, a group of warriors and scientists gather at the Oude Kerk to stage a risky plan against an army of robots. A 2012 sci-fi short blending live action and CGI.',
+      type: 'movie',
+      posterUrl: 'https://upload.wikimedia.org/wikipedia/commons/7/70/Tos-poster.png',
+      bannerUrl: 'https://upload.wikimedia.org/wikipedia/commons/7/70/Tos-poster.png',
+      videoUrl: 'https://archive.org/download/Tears-of-Steel/tears_of_steel_720p.mp4',
+      trailerUrl: null,
+      releaseYear: 2012, durationMinutes: 12, rating: 7.5, featured: false,
+      genreNames: ['Sci-Fi', 'Action'],
+    },
+    {
+      title: 'Cosmos Laundromat: First Cycle',
+      description: 'A suicidal, wealthy sheep named Franck is given one more chance at life by a mysterious salesman. A surreal 2015 comedy-drama from the Blender Foundation.',
+      type: 'movie',
+      posterUrl: 'https://upload.wikimedia.org/wikipedia/commons/c/c5/CosmosLaundromatPoster.jpg',
+      bannerUrl: 'https://upload.wikimedia.org/wikipedia/commons/c/c5/CosmosLaundromatPoster.jpg',
+      videoUrl: 'https://archive.org/download/cosmos-laundromat-first-cycle/Cosmos%20Laundromat%20-%20First%20Cycle.mp4',
+      trailerUrl: null,
+      releaseYear: 2015, durationMinutes: 12, rating: 7.3, featured: false,
+      genreNames: ['Comedy', 'Drama'],
+    },
+    {
+      title: 'Agent 327: Operation Barbershop',
+      description: 'Dutch secret agent Agent 327 walks into a barbershop that is not what it seems, in this fast, action-comedy short released by Blender Studio in 2017.',
+      type: 'movie',
+      posterUrl: 'https://archive.org/services/img/agent327operationbarbershop',
+      bannerUrl: 'https://archive.org/services/img/agent327operationbarbershop',
+      videoUrl: 'https://archive.org/download/agent327operationbarbershop/agent327.mp4',
+      trailerUrl: null,
+      releaseYear: 2017, durationMinutes: 4, rating: 7.7, featured: false,
+      genreNames: ['Action', 'Comedy'],
+    },
+    {
+      title: 'Spring',
+      description: 'A shepherd and her flock encounter a spirit who guards the change of seasons, in this 2019 fantasy short showcasing Blender\'s real-time EEVEE renderer.',
+      type: 'movie',
+      posterUrl: 'https://upload.wikimedia.org/wikipedia/commons/2/25/Spring2019AlphaPosterBlender.jpg',
+      bannerUrl: 'https://upload.wikimedia.org/wikipedia/commons/2/25/Spring2019AlphaPosterBlender.jpg',
+      videoUrl: 'https://archive.org/download/spring_blenderopenmovie/Spring%20-%20Blender%20Open%20Movie%20-%20YouTube.mp4',
+      trailerUrl: null,
+      releaseYear: 2019, durationMinutes: 7, rating: 7.8, featured: true,
+      genreNames: ['Drama'],
     },
   ];
 
   for (const m of movies) {
     const { genreNames: gNames, ...data } = m;
-    const [content] = await Content.findOrCreate({ where: { title: m.title }, defaults: data });
-    await content.setGenres(gNames.map((n) => genres[n].id));
-  }
-
-  for (const s of series) {
-    const { genreNames: gNames, episodes, ...data } = s;
-    const [content] = await Content.findOrCreate({ where: { title: s.title }, defaults: data });
-    await content.setGenres(gNames.map((n) => genres[n].id));
-    for (const ep of episodes) {
-      await Episode.findOrCreate({ where: { contentId: content.id, season: ep.season, episodeNumber: ep.episodeNumber }, defaults: { ...ep, contentId: content.id } });
+    const [content, created] = await Content.findOrCreate({ where: { title: m.title }, defaults: data });
+    if (!created) {
+      await content.update(data);
     }
+    await content.setGenres(gNames.map((n) => genres[n].id));
   }
 
   console.log('Seed complete.');

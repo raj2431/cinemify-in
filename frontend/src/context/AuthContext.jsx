@@ -39,6 +39,7 @@ export function AuthProvider({ children }) {
   const logout = () => {
     localStorage.removeItem('cinemify_token');
     setUser(null);
+    api.post('/auth/logout').catch(() => {});
   };
 
   return (

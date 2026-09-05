@@ -12,9 +12,6 @@ const listGenres = async (req, res) => {
 const createGenre = async (req, res) => {
   try {
     const { name } = req.body;
-    if (!name) {
-      return res.status(400).json({ message: 'Name is required' });
-    }
     const existing = await Genre.findOne({ where: { name } });
     if (existing) {
       return res.status(409).json({ message: 'Genre already exists' });

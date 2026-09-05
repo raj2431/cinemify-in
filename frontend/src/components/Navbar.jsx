@@ -1,9 +1,11 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { useProfile } from '../context/ProfileContext';
 
 export default function Navbar() {
   const { user, logout } = useAuth();
+  const { activeProfile } = useProfile();
   const navigate = useNavigate();
   const [query, setQuery] = useState('');
 
@@ -32,7 +34,14 @@ export default function Navbar() {
         </form>
         {user ? (
           <div className="user-menu">
-            <span>{user.name}</span>
+            <Link to="/profiles" className="profile-chip">
+              {activeProfile && (
+                <span className="profile-chip-avatar" style={{ background: activeProfile.avatarColor }}>
+                  {activeProfile.name.charAt(0).toUpperCase()}
+                </span>
+              )}
+              <span>{activeProfile ? activeProfile.name : user.name}</span>
+            </Link>
             <button onClick={() => { logout(); navigate('/'); }}>Sign out</button>
           </div>
         ) : (

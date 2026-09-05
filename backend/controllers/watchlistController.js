@@ -7,7 +7,7 @@ const getWatchlist = async (req, res) => {
         { model: Genre, as: 'genres', through: { attributes: [] } },
         {
           association: 'watchlistedBy',
-          where: { id: req.user.id },
+          where: { id: req.profile.id },
           attributes: [],
           through: { attributes: [] },
         },
@@ -27,7 +27,7 @@ const addToWatchlist = async (req, res) => {
       return res.status(404).json({ message: 'Content not found' });
     }
     const [entry, created] = await Watchlist.findOrCreate({
-      where: { userId: req.user.id, contentId },
+      where: { profileId: req.profile.id, contentId },
     });
     return res.status(created ? 201 : 200).json(entry);
   } catch (err) {
@@ -38,7 +38,7 @@ const addToWatchlist = async (req, res) => {
 const removeFromWatchlist = async (req, res) => {
   try {
     const { contentId } = req.params;
-    await Watchlist.destroy({ where: { userId: req.user.id, contentId } });
+    await Watchlist.destroy({ where: { profileId: req.profile.id, contentId } });
     return res.json({ message: 'Removed from watchlist' });
   } catch (err) {
     return res.status(500).json({ message: 'Failed to remove from watchlist', error: err.message });

@@ -7,6 +7,7 @@ import Register from './pages/Register';
 import Browse from './pages/Browse';
 import ContentDetail from './pages/ContentDetail';
 import MyList from './pages/MyList';
+import ProfileSwitcher from './pages/ProfileSwitcher';
 import Dashboard from './pages/Admin/Dashboard';
 import ContentForm from './pages/Admin/ContentForm';
 
@@ -22,6 +23,7 @@ export default function App() {
           <Route path="/browse" element={<Browse />} />
           <Route path="/title/:id" element={<ContentDetail />} />
           <Route path="/my-list" element={<ProtectedRoute><MyList /></ProtectedRoute>} />
+          <Route path="/profiles" element={<ProtectedRoute><ProfileSwitcher /></ProtectedRoute>} />
           <Route path="/admin" element={<AdminRoute><Dashboard /></AdminRoute>} />
           <Route path="/admin/new" element={<AdminRoute><ContentForm /></AdminRoute>} />
           <Route path="/admin/edit/:id" element={<AdminRoute><ContentForm /></AdminRoute>} />

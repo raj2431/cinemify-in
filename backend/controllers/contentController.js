@@ -72,10 +72,6 @@ const createContent = async (req, res) => {
       releaseYear, durationMinutes, rating, featured, genreIds,
     } = req.body;
 
-    if (!title || !type) {
-      return res.status(400).json({ message: 'Title and type are required' });
-    }
-
     const content = await Content.create({
       title, description, type, posterUrl, bannerUrl, videoUrl, trailerUrl,
       releaseYear, durationMinutes, rating, featured,
@@ -145,9 +141,6 @@ const addEpisode = async (req, res) => {
     }
 
     const { season, episodeNumber, title, description, videoUrl, durationMinutes } = req.body;
-    if (!episodeNumber || !title || !videoUrl) {
-      return res.status(400).json({ message: 'episodeNumber, title and videoUrl are required' });
-    }
 
     const episode = await Episode.create({
       contentId: content.id, season: season || 1, episodeNumber, title, description, videoUrl, durationMinutes,

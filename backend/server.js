@@ -1,17 +1,30 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const helmet = require('helmet');
+const cookieParser = require('cookie-parser');
 const { sequelize } = require('./models');
+const { apiLimiter } = require('./middleware/rateLimit');
 
 const authRoutes = require('./routes/authRoutes');
 const contentRoutes = require('./routes/contentRoutes');
 const genreRoutes = require('./routes/genreRoutes');
 const watchlistRoutes = require('./routes/watchlistRoutes');
+const profileRoutes = require('./routes/profileRoutes');
+const progressRoutes = require('./routes/progressRoutes');
+const uploadRoutes = require('./routes/uploadRoutes');
 
 const app = express();
 
-app.use(cors({ origin: process.env.CORS_ORIGIN || 'http://localhost:5173' }));
-app.use(express.json());
+app.set('trust proxy', 1);
+app.use(helmet());
+app.use(cors({
+  origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
+  credentials: true,
+}));
+app.use(express.json({ limit: '1mb' }));
+app.use(cookieParser());
+app.use('/api', apiLimiter);
 
 app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
 
@@ -19,6 +32,9 @@ app.use('/api/auth', authRoutes);
 app.use('/api/content', contentRoutes);
 app.use('/api/genres', genreRoutes);
 app.use('/api/watchlist', watchlistRoutes);
+app.use('/api/profiles', profileRoutes);
+app.use('/api/progress', progressRoutes);
+app.use('/api/uploads', uploadRoutes);
 
 app.use((req, res) => {
   res.status(404).json({ message: 'Route not found' });

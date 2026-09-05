@@ -126,6 +126,27 @@ a { color: inherit; text-decoration: none; }
 
 .page-loading { padding: 80px; text-align: center; font-size: 18px; }
 
+@keyframes shimmer {
+  0% { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+.skeleton {
+  background: linear-gradient(90deg, #222 25%, #2e2e2e 37%, #222 63%);
+  background-size: 800px 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+  border-radius: 4px;
+}
+
+.skeleton-card { flex: 0 0 180px; aspect-ratio: 2/3; }
+.grid .skeleton-card { flex: unset; width: 100%; }
+.skeleton-row-title { width: 160px; height: 20px; margin-bottom: 12px; }
+.skeleton-line { height: 16px; border-radius: 4px; }
+.skeleton-button { width: 120px; height: 40px; border-radius: 4px; }
+.skeleton-video { width: 100%; height: 60vh; border-radius: 0; }
+.hero-banner.skeleton-hero { background: none; }
+.page-loading-bar { height: 3px; width: 100%; border-radius: 0; }
+
 .auth-page {
   display: flex;
   align-items: center;
@@ -228,3 +249,81 @@ fieldset { border: 1px solid #444; border-radius: 4px; padding: 12px; }
 
 .add-episode-form { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 16px; }
 .add-episode-form input { background: #333; color: #fff; border: 1px solid #555; padding: 8px; border-radius: 4px; }
+
+/* Profile chip in navbar */
+.profile-chip { display: flex; align-items: center; gap: 8px; }
+.profile-chip-avatar {
+  width: 28px; height: 28px; border-radius: 4px; display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 13px; color: #fff;
+}
+
+/* Profile switcher screen */
+.profile-switcher {
+  min-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+  padding: 40px;
+}
+.profile-switcher h1 { font-size: 32px; font-weight: 400; }
+.profile-grid { display: flex; gap: 24px; flex-wrap: wrap; justify-content: center; }
+.profile-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  width: 140px;
+  position: relative;
+}
+.profile-avatar {
+  width: 100px; height: 100px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 36px; font-weight: 700; color: #fff;
+  transition: outline 0.15s ease;
+}
+.profile-tile:hover .profile-avatar { outline: 3px solid #fff; }
+.profile-avatar-add { background: #333; color: #999; font-size: 40px; }
+.profile-add:hover .profile-avatar-add { outline: 3px solid #fff; }
+.profile-delete {
+  background: rgba(0,0,0,0.7); border: 1px solid #666; color: #fff; font-size: 11px;
+  padding: 2px 8px; border-radius: 4px; cursor: pointer; position: absolute; top: -8px; right: 8px;
+}
+.profile-create-form {
+  cursor: default;
+  background: #1f1f1f;
+  padding: 16px;
+  border-radius: 8px;
+  gap: 10px;
+}
+.profile-create-form input { background: #333; color: #fff; border: 1px solid #555; padding: 8px; border-radius: 4px; width: 100%; }
+.color-picker { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; }
+.color-swatch { width: 22px; height: 22px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; }
+.color-swatch.selected { border-color: #fff; }
+
+/* Star rating */
+.star-rating { display: flex; gap: 4px; }
+.star-rating .star { background: none; border: none; font-size: 22px; color: #555; cursor: pointer; padding: 0; }
+.star-rating .star.filled { color: #f5c518; }
+.star-rating.read-only .star { cursor: default; }
+
+/* Reviews */
+.reviews-container { padding: 0 40px 60px; max-width: 800px; }
+.reviews-section h2 { font-size: 20px; margin-bottom: 16px; }
+.reviews-average { font-size: 15px; color: #ccc; font-weight: 400; }
+.review-form {
+  display: flex; flex-direction: column; gap: 10px;
+  background: #1f1f1f; padding: 16px; border-radius: 4px; margin-bottom: 20px;
+}
+.review-form textarea {
+  background: #333; color: #fff; border: 1px solid #555; padding: 10px; border-radius: 4px; resize: vertical;
+}
+.review-form-actions { display: flex; gap: 10px; }
+.reviews-empty { color: #999; }
+.review-item { padding: 14px 0; border-bottom: 1px solid #2a2a2a; }
+.review-item-header { display: flex; align-items: center; gap: 12px; margin-bottom: 6px; }
+.review-item p { margin: 0; color: #ccc; line-height: 1.5; }
+
+.upload-progress { color: #f5c518; font-size: 13px; }

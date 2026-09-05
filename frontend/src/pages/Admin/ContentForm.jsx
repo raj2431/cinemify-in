@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import api from '../../api/axios';
+import FileUploadField from '../../components/FileUploadField';
 
 const emptyForm = {
   title: '', description: '', type: 'movie', posterUrl: '', bannerUrl: '',
@@ -111,20 +112,32 @@ export default function ContentForm() {
             <option value="series">Series</option>
           </select>
         </label>
-        <label>Poster URL
-          <input name="posterUrl" value={form.posterUrl} onChange={handleChange} />
-        </label>
-        <label>Banner URL
-          <input name="bannerUrl" value={form.bannerUrl} onChange={handleChange} />
-        </label>
+        <FileUploadField
+          label="Poster"
+          kind="poster"
+          value={form.posterUrl}
+          onChange={(url) => setForm((f) => ({ ...f, posterUrl: url }))}
+        />
+        <FileUploadField
+          label="Banner"
+          kind="banner"
+          value={form.bannerUrl}
+          onChange={(url) => setForm((f) => ({ ...f, bannerUrl: url }))}
+        />
         {form.type === 'movie' && (
-          <label>Video URL
-            <input name="videoUrl" value={form.videoUrl} onChange={handleChange} />
-          </label>
+          <FileUploadField
+            label="Video"
+            kind="video"
+            value={form.videoUrl}
+            onChange={(url) => setForm((f) => ({ ...f, videoUrl: url }))}
+          />
         )}
-        <label>Trailer URL
-          <input name="trailerUrl" value={form.trailerUrl} onChange={handleChange} />
-        </label>
+        <FileUploadField
+          label="Trailer"
+          kind="trailer"
+          value={form.trailerUrl}
+          onChange={(url) => setForm((f) => ({ ...f, trailerUrl: url }))}
+        />
         <label>Release Year
           <input name="releaseYear" type="number" value={form.releaseYear} onChange={handleChange} />
         </label>
@@ -175,10 +188,15 @@ export default function ContentForm() {
             <input type="number" placeholder="Season" value={newEpisode.season} onChange={(e) => setNewEpisode({ ...newEpisode, season: e.target.value })} />
             <input type="number" placeholder="Episode #" value={newEpisode.episodeNumber} onChange={(e) => setNewEpisode({ ...newEpisode, episodeNumber: e.target.value })} />
             <input type="text" placeholder="Episode title" value={newEpisode.title} onChange={(e) => setNewEpisode({ ...newEpisode, title: e.target.value })} />
-            <input type="text" placeholder="Video URL" value={newEpisode.videoUrl} onChange={(e) => setNewEpisode({ ...newEpisode, videoUrl: e.target.value })} />
             <input type="number" placeholder="Duration (min)" value={newEpisode.durationMinutes} onChange={(e) => setNewEpisode({ ...newEpisode, durationMinutes: e.target.value })} />
             <button type="button" onClick={addEpisode}>+ Add Episode</button>
           </div>
+          <FileUploadField
+            label="Episode Video"
+            kind="video"
+            value={newEpisode.videoUrl}
+            onChange={(url) => setNewEpisode({ ...newEpisode, videoUrl: url })}
+          />
         </div>
       )}
     </div>

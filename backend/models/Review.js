@@ -1,13 +1,13 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/db');
 
-const Watchlist = sequelize.define('Watchlist', {
+const Review = sequelize.define('Review', {
   id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
     autoIncrement: true,
   },
-  profileId: {
+  userId: {
     type: DataTypes.INTEGER,
     allowNull: false,
   },
@@ -15,12 +15,21 @@ const Watchlist = sequelize.define('Watchlist', {
     type: DataTypes.INTEGER,
     allowNull: false,
   },
+  rating: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    validate: { min: 1, max: 5 },
+  },
+  comment: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+  },
 }, {
-  tableName: 'watchlist',
+  tableName: 'reviews',
   timestamps: true,
   indexes: [
-    { unique: true, fields: ['profileId', 'contentId'] },
+    { unique: true, fields: ['userId', 'contentId'] },
   ],
 });
 
-module.exports = Watchlist;
+module.exports = Review;
