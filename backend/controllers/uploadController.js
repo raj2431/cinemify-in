@@ -2,7 +2,7 @@ const crypto = require('crypto');
 const path = require('path');
 const { PutObjectCommand } = require('@aws-sdk/client-s3');
 const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
-const s3Client = require('../config/s3');
+const { getS3Client } = require('../config/s3');
 
 const ALLOWED_KINDS = ['poster', 'banner', 'trailer', 'video'];
 const CONTENT_TYPE_PREFIXES = {
@@ -44,7 +44,7 @@ const presignUpload = async (req, res) => {
       ContentType: fileType,
     });
 
-    const uploadUrl = await getSignedUrl(s3Client, command, { expiresIn: 15 * 60 });
+    const uploadUrl = await getSignedUrl(getS3Client(), command, { expiresIn: 15 * 60 });
 
     return res.json({ uploadUrl, publicUrl: buildPublicUrl(key), key });
   } catch (err) {

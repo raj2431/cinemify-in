@@ -77,4 +77,22 @@ Open http://localhost:5173, register a user (or sign in as the seeded admin) and
 | DELETE | /api/watchlist/:contentId                | Remove from watchlist               | User        |
 
 Video/poster/trailer fields are plain URLs (no file upload or transcoding pipeline) — point them at any hosted video/image, e.g. an S3/CDN URL.
+
+## Running with Docker
+
+The whole stack (MySQL + backend + frontend behind nginx) can run in containers instead of local `npm` processes.
+
+```bash
+cp .env.example .env   # fill in MYSQL_ROOT_PASSWORD, DB_PASSWORD, JWT_SECRET (long random values)
+docker compose build
+docker compose up -d
+docker compose exec backend npm run seed   # first run only: creates admin user + demo catalog
+```
+
+- Frontend: http://localhost:8080
+- Backend API (direct): http://localhost:5000
+- The frontend's nginx proxies `/api/*` to the backend container on the same origin, so there's no CORS to worry about in this setup.
+- MySQL data persists in the `mysql_data` Docker volume across restarts; it is **not** exposed on a host port by default (only reachable from other containers on the compose network).
+- `docker compose logs -f backend` / `frontend` / `mysql` to tail logs; `docker compose down` to stop (add `-v` to also delete the MySQL volume).
+- This `.env` at the repo root is only read by `docker-compose.yml`. Local (non-Docker) dev still uses `backend/.env` and `frontend/.env` as described above — the two setups don't share configuration.
 # cinemify-in
