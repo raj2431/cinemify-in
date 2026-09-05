@@ -1,5 +1,6 @@
 import { Route, Routes } from 'react-router-dom';
 import Navbar from './components/Navbar';
+import Footer from './components/Footer';
 import { ProtectedRoute, AdminRoute } from './components/ProtectedRoute';
 import Home from './pages/Home';
 import Login from './pages/Login';
@@ -29,6 +30,7 @@ export default function App() {
           <Route path="/admin/edit/:id" element={<AdminRoute><ContentForm /></AdminRoute>} />
         </Routes>
       </main>
+      <Footer />
     </>
   );
 }

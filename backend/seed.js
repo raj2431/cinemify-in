@@ -20,7 +20,7 @@ const run = async () => {
     admin = await User.create({ name: 'Admin', email: adminEmail, password: hashed, role: 'admin' });
     console.log(`Created admin user: ${adminEmail} / admin123`);
   }
-  await Profile.findOrCreate({ where: { userId: admin.id }, defaults: { name: 'Admin', avatarColor: '#e50914' } });
+  await Profile.findOrCreate({ where: { userId: admin.id }, defaults: { name: 'Admin', avatarColor: '#6c63ff' } });
 
   // Real, freely-licensed short films (Blender Foundation open movies, CC BY 3.0/4.0),
   // hosted on the Internet Archive. Posters are official promotional art from Wikimedia Commons.

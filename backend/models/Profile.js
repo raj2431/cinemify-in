@@ -17,7 +17,7 @@ const Profile = sequelize.define('Profile', {
   },
   avatarColor: {
     type: DataTypes.STRING,
-    defaultValue: '#e50914',
+    defaultValue: '#6c63ff',
   },
   isKids: {
     type: DataTypes.BOOLEAN,

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import api from '../api/axios';
 import { useProfile } from '../context/ProfileContext';
 
-const COLORS = ['#e50914', '#0071eb', '#00a86b', '#f5a623', '#8e44ad', '#e67e22'];
+const COLORS = ['#6c63ff', '#0ea5b8', '#22c55e', '#f5a623', '#ec4899', '#f97316'];
 
 export default function ProfileSwitcher() {
   const { profiles, setActiveProfile, refreshProfiles } = useProfile();
