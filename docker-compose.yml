@@ -39,6 +39,12 @@ services:
       AWS_CLOUDFRONT_DOMAIN: ${AWS_CLOUDFRONT_DOMAIN:-}
     ports:
       - "5000:5000"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:5000/api/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
 
   frontend:
     build:
@@ -47,7 +53,8 @@ services:
         VITE_API_URL: ${VITE_API_URL:-/api}
     restart: unless-stopped
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
     ports:
       - "8080:80"
 

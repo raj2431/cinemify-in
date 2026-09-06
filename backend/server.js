@@ -6,6 +6,7 @@ const cookieParser = require('cookie-parser');
 const { sequelize } = require('./models');
 const { apiLimiter } = require('./middleware/rateLimit');
 
+const healthRoutes = require('./routes/healthRoutes');
 const authRoutes = require('./routes/authRoutes');
 const contentRoutes = require('./routes/contentRoutes');
 const genreRoutes = require('./routes/genreRoutes');
@@ -24,9 +25,10 @@ app.use(cors({
 }));
 app.use(express.json({ limit: '1mb' }));
 app.use(cookieParser());
-app.use('/api', apiLimiter);
 
-app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
+app.use('/api/health', healthRoutes);
+
+app.use('/api', apiLimiter);
 
 app.use('/api/auth', authRoutes);
 app.use('/api/content', contentRoutes);
