@@ -49,6 +49,7 @@ app.use((err, req, res, next) => {
 });
 
 const PORT = process.env.PORT || 5000;
+const HOST = process.env.HOST || '0.0.0.0';
 
 const start = async () => {
   try {
@@ -56,7 +57,7 @@ const start = async () => {
     console.log('MySQL connection established.');
     await sequelize.sync({ alter: true });
     console.log('Models synced.');
-    app.listen(PORT, () => console.log(`Cinemify API running on port ${PORT}`));
+    app.listen(PORT, HOST, () => console.log(`Cinemify API running on ${HOST}:${PORT}`));
   } catch (err) {
     console.error('Unable to start server:', err.message);
     process.exit(1);
